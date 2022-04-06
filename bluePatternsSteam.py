@@ -12,11 +12,10 @@ import logging
 import requests
 import sys
 import linecache
-import cv2
-import numpy as np
 import urllib.request
 import mysql.connector
 from datetime import datetime
+import telebot
 
 
 # обработка ошибок
@@ -44,15 +43,20 @@ def PrintException():
     driver.quit()
     sys.exit()
 
-
+def send_telebot(text):
+    ids = [548566017, 667522026]
+    for id_getter in ids:
+        bot.send_message(id_getter, text)
+    
 try:
+
+    bot_token = "911490823:AAG1vqimBBTmN17RsqSVp-deS_AXpX8916E"
+    bot = telebot.TeleBot(bot_token)
+
     #csMoney blocks default agent user (need to change)
     class AppURLopener(urllib.request.FancyURLopener):
         version = "Mozilla/5.0"
     opener = AppURLopener()
-
-    # from pyvirtualdisplay import Display #linux
-    # import pyautogui #linux
 
     # start time
     now = datetime.now()
@@ -66,15 +70,14 @@ try:
 
     chrome_options = Options()
 
-    # chrome_options.add_argument("user-data-dir=/home/work/profilesForAll/csMoneyBuy")  # linux
     chrome_options.add_argument(
         "user-data-dir=C:\\Users\\andre\\AppData\\Local\\Google\\Chrome\\User Data\\Default")  # windows
 
     #chrome_options.add_argument('--headless') #test
-    #chrome_options.add_argument('--disable-gpu')  # Last I checked this was necessary. #test
+    print(chrome_options.add_argument('--disable-gpu'))  # Last I checked this was necessary. #test
 
     chrome_options.add_extension('steamHelper.crx')
-    #chrome_options.add_extension('csgofloat.crx')
+    chrome_options.add_extension('csgofloat.crx')
 
     chrome_options.add_argument('--window-size=1600,900') #windows
 
@@ -151,7 +154,7 @@ try:
 except Exception as e:
     PrintException()
     logger.exception(e)  # Will send the errors to the file
-    telegram_bot_sendtext("blurPatterns: Возникла ошибка, нужно выяснять")
+    send_telebot("blurPatterns: Возникла ошибка, нужно выяснять")
 
 
 try:
@@ -275,13 +278,12 @@ try:
                         print("percentages: ", percentage_top, percentage_bottom, type(int(percentage_top)), int(percentage_top))
                         if int(percentage_top) > 30 and int(percentage_bottom) > 30:
                             print("gotcha!")
-                            telegram_bot_sendtext("patternsBlue: индекс предмета - " + str(index) + "нашел предмет - " + str(item_link))
-
+                            send_telebot("patternsBlue: индекс предмета - " + str(index) + "нашел предмет - " + str(item_link))
                         break
 
 
 except Exception as e:
-    telegram_bot_sendtext("bluePatterns: Возникла ошибка, нужно выяснять")
+    send_telebot("bluePatterns: Возникла ошибка, нужно выяснять")
     logger.exception(e)  # Will send the errors to the file
     PrintException()
 
